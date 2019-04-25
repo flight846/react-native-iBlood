@@ -1,31 +1,24 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { Block, Text } from './components';
+import * as theme from "./theme";
+import * as mocks from "./mocks";
 
 export default class App extends Component {
     render() {
         return (
-            <View style={styles.container}>
-                <Text style={styles.welcome}>Welcome to React Native!</Text>
-            </View>
+            <Block center middle style={ styles.container }>
+                <Text h1 bold>iBlood</Text>
+            </Block>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
+        // flex: 1,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        backgroundColor: theme.colors.white,
     },
 });
