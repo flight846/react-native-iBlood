@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "react": "16.8.3",
-    "react-native": "0.59.5"
+    "react-native": "0.59.5",
+    "react-native-svg": "^9.4.0",
+    "react-native-svg-charts": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",

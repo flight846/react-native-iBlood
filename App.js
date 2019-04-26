@@ -1,10 +1,54 @@
 import React, {Component} from 'react';
-import { Platform, StyleSheet, Image, SafeAreaView } from 'react-native';
+import { Platform, StyleSheet, Image, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { LineChart, Path } from 'react-native-svg-charts';
+import { Line } from "react-native-svg";
+import * as shape from 'd3-shape';
 import { Block, Text } from './components';
 import * as theme from "./theme";
 import * as mocks from "./mocks";
 
-export default class App extends Component {
+class App extends Component {
+    renderChart() {
+        const { chart } = this.props;
+        const LineShadow = ({ line }) => (
+            <Path
+                d={line}
+                fill="none"
+                stroke={theme.colors.primary}
+                strokeWidth={7}
+                strokeOpacity={0.07}
+            />
+        );
+
+        return (
+            <LineChart
+                yMin={0}
+                yMax={10}
+                data={chart}
+                style={{ flex: 2 }}
+                curve={shape.curveMonotoneX}
+                svg={{
+                    stroke: theme.colors.primary,
+                    strokeWidth: 1.25
+                }}
+                contentInset={{ left: theme.sizes.base, right: theme.sizes.base }}
+            >
+                <LineShadow belowChart={true} />
+                <Line
+                    key="zero-axis"
+                    x1="0%"
+                    x2="100%"
+                    y1="50%"
+                    y2="50%"
+                    belowChart={true}
+                    stroke={theme.colors.gray}
+                    strokeDasharray={[2, 10]}
+                    strokeWidth={1}
+                />
+            </LineChart>
+        );
+    }
+
     renderHeader() {
         return (
             <Block flex={0.42} column style={{ paddingHorizontal: 15 }}>
@@ -31,30 +75,67 @@ export default class App extends Component {
                             <Text h1>481</Text>
                         </Block>
                     </Block>
-                    <Block
-                        flex={0.5}
-                        row
-                        space="between"
-                        style={{ paddingHorizontal: 30 }}>
-                        <Text caption light>
-                            Available
-                        </Text>
-                        <Text caption light>
-                            Requests
-                        </Text>
+                    <Block flex={0.5} row space="between" style={{ paddingHorizontal: 30 }}> 
+                        <Text caption light>Available</Text> 
+                        <Text caption light>Requests</Text> 
                     </Block>
                     <Block flex={1}>
-                        <Text>Chart</Text>
+                        {this.renderChart()}
                     </Block>
                 </Block>
             </Block>
         )
     }
 
-    renderRequests() {
+    renderRequest(request) {
         return (
-            <Block flex={0.8} column color='gray2' style={ styles.requests }>
-                <Text>Requests</Text>
+            <Block row card shadow color='white' style={ styles.request }>
+                <Block 
+                    flex={0.25} 
+                    card 
+                    column 
+                    color='secondary' 
+                    style={styles.requestStatus}
+                >
+                    <Block flex={0.25} middle center color={theme.colors.primary}>
+                        <Text small white style={{ textTransform: 'uppercase' }}>
+                            {request.priority}
+                        </Text>
+                    </Block>
+                    <Block flex={0.7} center middle>
+                        <Text h2 white>
+                            {request.bloodType}
+                        </Text>
+                    </Block>
+                </Block>
+                <Block flex={0.75} column middle>
+                    <Text h3 style={{ paddingVertical: 8, }}>{request.name}</Text>
+                    <Text caption semibold>
+                        {request.age}  •  {request.gender}  •  {request.distance}km  •  {request.time}hrs
+                    </Text>
+                </Block>
+            </Block>
+        )
+    }
+
+    renderRequests() {
+        const { requests } = this.props;
+
+        return (
+            <Block flex={0.8} column color="gray2" style={styles.requests}>
+                <Block flex={false} row space="between" style={styles.requestsHeader}>
+                    <Text light>Recent Updates</Text>
+                    <TouchableOpacity activeOpacity={0.8}>
+                        <Text semibold>View All</Text>
+                    </TouchableOpacity>
+                </Block>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    {requests.map(request => (
+                        <TouchableOpacity activeOpacity={0.8} key={`request-${request.id}`}>
+                            {this.renderRequest(request)}
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
             </Block>
         )
     }
@@ -69,6 +150,14 @@ export default class App extends Component {
     }
 }
 
+App.defaultProps = {
+    user: mocks.user,
+    requests: mocks.requests,
+    chart: mocks.chart
+}
+
+export default App;
+
 const styles = StyleSheet.create({
     safe: {
         flex: 1,
@@ -79,12 +168,31 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         zIndex: 1
     },
+    avatar: {
+        width: 25,
+        height: 25,
+        borderRadius: 25 / 2,
+        marginRight: 5,
+    },
     requests: {
         marginTop: -55,
         paddingTop: 55 + 20,
         paddingHorizontal: 15,
         zIndex: -1
     },
+    requestsHeader: {
+        paddingHorizontal: 20,
+        paddingBottom: 15
+    },
+    request: {
+        padding: 20,
+        marginBottom: 15
+    },
+    requestStatus: {
+        marginRight: 20,
+        overflow: "hidden",
+        height: 90
+    }
 });
 
 // 1:00:50
